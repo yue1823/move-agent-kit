@@ -4,6 +4,7 @@
 
 An open-source toolkit for connecting AI agents to Move/Aptos protocols.
 
+![Move Agent Kit](./move-agent-kit.jpeg "Move Agent Kit")
 
 ![NPM Downloads](https://img.shields.io/npm/dm/move-agent-kit?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/MetaMove/move-agent-kit?style=for-the-badge)
