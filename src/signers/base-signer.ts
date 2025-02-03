@@ -6,8 +6,12 @@ import {
 	AnyRawTransaction,
 	Account,
 } from "@aptos-labs/ts-sdk";
-import { SignedTransactionResponse, Transaction } from "../types";
-import { SignMessageResponse } from "aptos-wallet-adapter";
+import { SignedTransactionResponse } from "../types";
+import {
+	InputTransactionData,
+	SignMessagePayload,
+	SignMessageResponse,
+} from "@aptos-labs/wallet-adapter-react";
 
 export abstract class BaseSigner {
 	protected constructor(
@@ -21,12 +25,12 @@ export abstract class BaseSigner {
 
 	//  abstract getAccount(): Account;
 	abstract signTransaction(
-		transaction: Transaction | AnyRawTransaction,
+		transaction: AnyRawTransaction,
 	): Promise<SignedTransactionResponse>;
 	abstract sendTransaction(
-		transaction: Transaction | AnyRawTransaction,
+		transaction: InputTransactionData | AnyRawTransaction,
 	): Promise<string>;
 	abstract signMessage(
-		message: string,
+		message: SignMessagePayload | string,
 	): Promise<SignMessageResponse | string>;
 }

@@ -4,10 +4,10 @@ import {
 	AptosConfig,
 	Ed25519PrivateKey,
 	HexInput,
+	Network,
 	PrivateKey,
 	PrivateKeyVariants,
 } from "@aptos-labs/ts-sdk";
-import { Network } from "aptos";
 
 export const main = async () => {
 	const aptosConfig = new AptosConfig({
