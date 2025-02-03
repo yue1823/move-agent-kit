@@ -5,7 +5,7 @@ import {
 import { AgentRuntime } from "../../agent";
 
 /**
- * Lend tokens in Echelon
+ * Repay tokens in Echelon
  * @param agent MoveAgentKit instance
  * @param mintType Type of coin to lend
  * @param amount Amount to lend
@@ -13,7 +13,7 @@ import { AgentRuntime } from "../../agent";
  * @param fungibleAsset Whether the asset is fungible
  * @returns Transaction signature
  */
-export async function lendTokenWithEchelon(
+export async function repayTokenWithEchelon(
 	agent: AgentRuntime,
 	mintType: MoveStructId,
 	amount: number,
@@ -24,13 +24,13 @@ export async function lendTokenWithEchelon(
 		const FUNCTIONAL_ARGS_DATA = [poolAddress, amount];
 
 		const COIN_STANDARD_DATA: InputGenerateTransactionPayloadData = {
-			function: `0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::scripts::supply`,
+			function: `0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::scripts::repay`,
 			typeArguments: [mintType.toString()],
 			functionArguments: FUNCTIONAL_ARGS_DATA,
 		};
 
 		const FUNGIBLE_ASSET_DATA: InputGenerateTransactionPayloadData = {
-			function: `0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::scripts::supply_fa`,
+			function: `0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::scripts::repay_fa`,
 			functionArguments: FUNCTIONAL_ARGS_DATA,
 		};
 
@@ -47,12 +47,12 @@ export async function lendTokenWithEchelon(
 		});
 
 		if (!signedTransaction.success) {
-			console.error(signedTransaction, "Lend failed");
-			throw new Error("Lend failed");
+			console.error(signedTransaction, "Repay failed");
+			throw new Error("Repay failed");
 		}
 
 		return signedTransaction.hash;
 	} catch (error: any) {
-		throw new Error(`Lend failed: ${error.message}`);
+		throw new Error(`Repay failed: ${error.message}`);
 	}
 }
