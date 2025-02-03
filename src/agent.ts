@@ -19,6 +19,7 @@ import {
 	getTokenDetails,
 	getUserAllPositions,
 	createToken,
+	getTokenPrice,
 } from "./tools";
 import { AptosPriceServiceConnection } from "@pythnetwork/pyth-aptos-js";
 import { priceFeed } from "./constants/price-feed";
@@ -51,6 +52,8 @@ import { getTokenByTokenName } from "./utils/get-pool-address-by-token-name";
 import {
 	lendTokenWithEchelon,
 	withdrawTokenWithEchelon,
+	repayTokenWithEchelon,
+	borrowTokenWithEchelon,
 } from "./tools/echelon";
 
 export class AgentRuntime {
@@ -82,6 +85,10 @@ export class AgentRuntime {
 
 	getTokenByTokenName(name: string) {
 		return getTokenByTokenName(name);
+	}
+
+	getTokenPrice(query: string) {
+		return getTokenPrice(query);
 	}
 
 	transferTokens(to: AccountAddress, amount: number, mint: string) {
@@ -343,6 +350,36 @@ export class AgentRuntime {
 		fungibleAsset: boolean,
 	) {
 		return withdrawTokenWithEchelon(
+			this,
+			mintType,
+			amount,
+			poolAddress,
+			fungibleAsset,
+		);
+	}
+
+	repayTokenWithEchelon(
+		mintType: MoveStructId,
+		amount: number,
+		poolAddress: string,
+		fungibleAsset: boolean,
+	) {
+		return repayTokenWithEchelon(
+			this,
+			mintType,
+			amount,
+			poolAddress,
+			fungibleAsset,
+		);
+	}
+
+	borrowTokenWithEchelon(
+		mintType: MoveStructId,
+		amount: number,
+		poolAddress: string,
+		fungibleAsset: boolean,
+	) {
+		return borrowTokenWithEchelon(
 			this,
 			mintType,
 			amount,

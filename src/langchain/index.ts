@@ -6,6 +6,7 @@ import {
 	AptosBurnTokenTool,
 	AptosCreateTokenTool,
 	AptosGetTokenDetailTool,
+	AptosGetTokenPriceTool,
 	AptosMintTokenTool,
 	AptosTransactionTool,
 	AptosTransferTokenTool,
@@ -43,11 +44,20 @@ import {
 } from "./thala";
 import { PanoraSwapTool } from "./panora";
 import { EchoStakeTokenTool, EchoUnstakeTokenTool } from "./echo";
-import { EchelonLendTokenTool, EchelonWithdrawTokenTool } from "./echelon";
+import {
+	EchelonBorrowTokenTool,
+	EchelonLendTokenTool,
+	EchelonRepayTokenTool,
+	EchelonWithdrawTokenTool,
+} from "./echelon";
 import { OpenAICreateImageTool } from "./openai";
+import { ToolsNameList } from "../types";
 
-export const createAptosTools = (agent: AgentRuntime) => {
-	return [
+export const createAptosTools = (
+	agent: AgentRuntime,
+	config: { filter?: ToolsNameList[] } = {},
+) => {
+	const tools = [
 		// Aptos tools
 		new AptosBalanceTool(agent),
 		new AptosAccountAddressTool(agent),
@@ -59,6 +69,7 @@ export const createAptosTools = (agent: AgentRuntime) => {
 		new AptosGetTokenDetailTool(agent),
 		new AptosMintTokenTool(agent),
 		new AptosCreateTokenTool(agent),
+		new AptosGetTokenPriceTool(agent),
 		// Amnis tools
 		new AmnisStakeTool(agent),
 		new AmnisWithdrawStakeTool(agent),
@@ -98,5 +109,13 @@ export const createAptosTools = (agent: AgentRuntime) => {
 		// Echelon tools
 		new EchelonLendTokenTool(agent),
 		new EchelonWithdrawTokenTool(agent),
+		new EchelonRepayTokenTool(agent),
+		new EchelonBorrowTokenTool(agent),
 	];
+
+	return config.filter
+		? tools.filter((tool) =>
+				config?.filter?.includes(tool.name as ToolsNameList),
+			)
+		: tools;
 };
