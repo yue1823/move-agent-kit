@@ -5,10 +5,10 @@ import {
 	AptosConfig,
 	Ed25519PrivateKey,
 	HexInput,
+	Network,
 	PrivateKey,
 	PrivateKeyVariants,
 } from "@aptos-labs/ts-sdk";
-import { Network } from "aptos";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { HumanMessage } from "@langchain/core/messages";
 import { MemorySaver } from "@langchain/langgraph";
