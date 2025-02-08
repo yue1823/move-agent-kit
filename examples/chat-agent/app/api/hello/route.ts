@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { AgentRuntime, LocalSigner, createAptosTools } from "test-agent-kit-2";
+import {
+	AgentRuntime,
+	LocalSigner,
+	createAptosTools,
+} from "../../../../../src/index";
 import {
 	Aptos,
 	AptosConfig,
@@ -108,8 +112,7 @@ export async function POST(request: Request) {
 
 		const signer = new LocalSigner(account, Network.MAINNET);
 		const aptosAgent = new AgentRuntime(signer, aptos, {
-			PANORA_API_KEY:
-				process.env.PANORA_API_KEY 
+			PANORA_API_KEY: process.env.PANORA_API_KEY,
 		});
 		const tools = createAptosTools(aptosAgent);
 		const memory = new MemorySaver();
