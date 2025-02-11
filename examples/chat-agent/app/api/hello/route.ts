@@ -26,7 +26,7 @@ import {
 const llm = new ChatAnthropic({
 	temperature: 0.7,
 	model: "claude-3-5-sonnet-20241022",
-	apiKey: process.env.CLAUDE_API_KEY,
+	apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 const textDecoder = new TextDecoder();
