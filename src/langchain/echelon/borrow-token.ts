@@ -25,6 +25,8 @@ export class EchelonBorrowTokenTool extends Tool {
 
 			const token = this.agent.getTokenByTokenName(parsedInput.name);
 
+			if (!token) throw new Error("Token not found");
+
 			const mint =
 				parsedInput.mint ||
 				token.tokenAddress ||

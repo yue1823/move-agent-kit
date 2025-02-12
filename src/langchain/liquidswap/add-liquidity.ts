@@ -2,6 +2,7 @@ import { Tool } from "langchain/tools";
 import { AgentRuntime, parseJson } from "../..";
 import { convertAmountFromHumanReadableToOnChain } from "@aptos-labs/ts-sdk";
 import { parseFungibleAssetAddressToWrappedAssetAddress } from "../../utils/parse-fungible-asset-to-wrapped-asset";
+import { getTokenByTokenName } from "../../utils/get-pool-address-by-token-name";
 
 export class LiquidSwapAddLiquidityTool extends Tool {
 	name = "liquidswap_add_liquidity";
@@ -9,9 +10,14 @@ export class LiquidSwapAddLiquidityTool extends Tool {
 
     if you want to add APT and one of the token, mint will be "0x1::aptos_coin::AptosCoin"
 
+	if user added mintX or mintY as asset name, and you don't have the address of the asset, you can use the following token names:
+	['usdt', 'zusdt', 'zusdc', 'apt', 'sthapt', 'mod', 'thl', 'wusdc' , 'zweth', 'wweth', 'cake', 'stapt', 'abtc', 'stone' , 'truapt', 'sbtc']
+	or whatever name the user has provided, you can use the token name to get the address of the token 
+
+
     Inputs ( input is a JSON string ):
-    mintX: string, eg "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT" (required)
-    mintY: string, eg "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT" (required)
+    mintX: string, eg "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT" or "usdt (name of the token)" (required)
+    mintY: string, eg "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT" or "usdt (name of the token)" (required)
     mintXAmount: number, eg 1 or 0.01 (required)
     mintYAmount: number, eg 1 or 0.01 (required)
   `;
@@ -23,21 +29,34 @@ export class LiquidSwapAddLiquidityTool extends Tool {
 	protected async _call(input: string): Promise<string> {
 		try {
 			const parsedInput = parseJson(input);
+	
+			// Resolve token names to addresses
+			let mintX = parsedInput.mintX;
+			const tokenX = getTokenByTokenName(mintX);
+			if (tokenX){
+				mintX = tokenX.tokenAddress;
+			}	
 
-			const mintXDetail = await this.agent.getTokenDetails(
-				parsedInput.mintX,
-			);
-			const mintYDetail = await this.agent.getTokenDetails(
-				parsedInput.mintY,
-			);
+			let mintY = parsedInput.mintY;
+			const tokenY = getTokenByTokenName(mintY);
+			if (tokenY){
+				mintY = tokenY.tokenAddress;
+			}	
+			
+			console.log("mintX", mintX, "mintY", mintY);
+			const wrappedMintX = parseFungibleAssetAddressToWrappedAssetAddress(mintX);
+			const wrappedMintY = parseFungibleAssetAddressToWrappedAssetAddress(mintY);
+	
+			console.log("wrappedMintX", wrappedMintX, "wrappedMintY", wrappedMintY);
+
+			const mintXDetail = await this.agent.getTokenDetails(wrappedMintX);
+			const mintYDetail = await this.agent.getTokenDetails(wrappedMintY);
+	
+			console.log("mintXDetail", mintXDetail, "mintYDetail", mintYDetail);
 
 			const swapTransactionHash = await this.agent.addLiquidity(
-				parseFungibleAssetAddressToWrappedAssetAddress(
-					parsedInput.mintX,
-				),
-				parseFungibleAssetAddressToWrappedAssetAddress(
-					parsedInput.mintY,
-				),
+				wrappedMintX,
+				wrappedMintY,
 				convertAmountFromHumanReadableToOnChain(
 					parsedInput.mintXAmount,
 					mintXDetail.decimals,
@@ -47,7 +66,7 @@ export class LiquidSwapAddLiquidityTool extends Tool {
 					mintYDetail.decimals,
 				),
 			);
-
+	
 			return JSON.stringify({
 				status: "success",
 				swapTransactionHash,
