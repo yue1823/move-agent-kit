@@ -84,5 +84,9 @@
 	"peerDependencies": {
 		"@aptos-labs/ts-sdk": "^1.33.1",
 		"@aptos-labs/wallet-adapter-react": "^3.7.9"
+	},
+	"pnpm": {
+		"ignoredBuiltDependencies": ["bigint-buffer", "bufferutil", "esbuild", "utf-8-validate"],
+		"onlyBuiltDependencies": ["@biomejs/biome", "lefthook"]
 	}
 }
