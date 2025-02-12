@@ -6,12 +6,16 @@ export const StateAnnotation = Annotation.Root({
 		reducer: messagesStateReducer,
 		default: () => []
 	}),
-	isReadQuery: Annotation<boolean>({
+	isAptosReadQuery: Annotation<boolean>({
 		reducer: (x, y) => y ?? x ?? false,
 		default: () => false
 	}),
-	isGeneralQuery: Annotation<boolean>({
+	isWriterQuery: Annotation<boolean>({
 		reducer: (x, y) => y ?? x ?? false,
 		default: () => false
-	})
+	}),
+	isXPostQuery: Annotation<boolean>({
+		reducer: (x, y) => y ?? x ?? false,
+		default: () => false
+	}),
 })

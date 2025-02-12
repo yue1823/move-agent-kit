@@ -6,7 +6,7 @@ import {
 	AgentRuntime,
 	LocalSigner,
 	createAptosTools,
-} from "../../../../../src/index";
+} from "move-agent-kit";
 import {
 	Aptos,
 	AptosConfig,
@@ -25,7 +25,7 @@ import {
 
 const llm = new ChatAnthropic({
 	temperature: 0.7,
-	model: "claude-3-5-sonnet-20241022",
+	model: "claude-3-5-sonnet-latest",
 	apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
