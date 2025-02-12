@@ -1,5 +1,5 @@
-import { AccountAddress, Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import { type AccountAddress, Aptos, AptosConfig } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Transfer NFT
@@ -11,9 +11,9 @@ import { AgentRuntime } from "../../agent";
 export async function transferNFT(
 	agent: AgentRuntime, // Replace with the actual type of the move-agent
 	to: AccountAddress,
-	mint: AccountAddress,
+	mint: AccountAddress
 ): Promise<string> {
-	return "";
+	return ""
 	//  try {
 	//    const transaction = await agent.aptos.transferDigitalAssetTransaction({
 	//      sender: agent.account.getAccount(),

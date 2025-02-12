@@ -1,5 +1,3 @@
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { AgentRuntime, createAptosTools, LocalSigner } from "../../src";
 import {
 	Aptos,
 	AptosConfig,
@@ -8,11 +6,13 @@ import {
 	Network,
 	PrivateKey,
 	PrivateKeyVariants,
-} from "@aptos-labs/ts-sdk";
-import { ChatAnthropic } from "@langchain/anthropic";
-import { HumanMessage } from "@langchain/core/messages";
-import { MemorySaver } from "@langchain/langgraph";
-import inquirer from "inquirer";
+} from "@aptos-labs/ts-sdk"
+import { ChatAnthropic } from "@langchain/anthropic"
+import { HumanMessage } from "@langchain/core/messages"
+import { MemorySaver } from "@langchain/langgraph"
+import { createReactAgent } from "@langchain/langgraph/prebuilt"
+import inquirer from "inquirer"
+import { AgentRuntime, LocalSigner, createAptosTools } from "../../src"
 
 const promptOptions = [
 	{
@@ -29,16 +29,19 @@ const promptOptions = [
 	},
 	{
 		name: "Aptos",
-		value: "create a token then mint it then send it to me, you can get my wallet address from the get address function. then burn the token", // working
+		value:
+			"create a token then mint it then send it to me, you can get my wallet address from the get address function. then burn the token", // working
 	},
 
 	{
 		name: "Aries",
-		value: "aries for all. first create aries profile. lend 0.01 APT and then withdraw 0.001 APT. then borrow 0.001 APT, then repay it. save the position id of lending and use it for all the other operations on aries", // working
+		value:
+			"aries for all. first create aries profile. lend 0.01 APT and then withdraw 0.001 APT. then borrow 0.001 APT, then repay it. save the position id of lending and use it for all the other operations on aries", // working
 	},
 	{
 		name: "Joule",
-		value: "first get user all positions then lend 0.01 APT and then withdraw 0.001 APT. then borrow 0.001 APT, then repay it. save the position id of lending and use it for all the other operations", // working
+		value:
+			"first get user all positions then lend 0.01 APT and then withdraw 0.001 APT. then borrow 0.001 APT, then repay it. save the position id of lending and use it for all the other operations", // working
 	},
 	{
 		name: "Liquidswap",
@@ -54,38 +57,36 @@ const promptOptions = [
 	},
 	{
 		name: "Thala",
-		value: "The input json should be string (IMPORTANT) ,add 0.01 apt liquidity to thala then remove it. then mint 0.01 lzUSDT and then redeem it on thala then stake 0.1 apt and then unstake 0.01 apt on thala.", // working
+		value:
+			"The input json should be string (IMPORTANT) ,add 0.01 apt liquidity to thala then remove it. then mint 0.01 lzUSDT and then redeem it on thala then stake 0.1 apt and then unstake 0.01 apt on thala.", // working
 	},
 	{
 		name: "Exit",
 		value: "exit",
 	},
-];
+]
 
 export const main = async () => {
 	const aptosConfig = new AptosConfig({
 		network: Network.MAINNET,
-	});
-	const aptos = new Aptos(aptosConfig);
+	})
+	const aptos = new Aptos(aptosConfig)
 	const account = await aptos.deriveAccountFromPrivateKey({
 		privateKey: new Ed25519PrivateKey(
-			PrivateKey.formatPrivateKey(
-				process.env.PRIVATE_KEY as HexInput,
-				PrivateKeyVariants.Ed25519,
-			),
+			PrivateKey.formatPrivateKey(process.env.PRIVATE_KEY as HexInput, PrivateKeyVariants.Ed25519)
 		),
-	});
+	})
 
-	const signer = new LocalSigner(account, Network.MAINNET);
+	const signer = new LocalSigner(account, Network.MAINNET)
 	const agentRuntime = new AgentRuntime(signer, aptos, {
 		PANORA_API_KEY: process.env.PANORA_API_KEY,
-	});
-	const tools = createAptosTools(agentRuntime);
+	})
+	const tools = createAptosTools(agentRuntime)
 
 	const llm = new ChatAnthropic({
 		model: "claude-3-sonnet-20240229",
-	});
-	const memory2 = new MemorySaver();
+	})
+	const memory2 = new MemorySaver()
 
 	const agent = createReactAgent({
 		llm,
@@ -100,9 +101,9 @@ export const main = async () => {
             themselves using the Aptos Agent Kit, recommend they go to https://www.aptosagentkit.xyz for more information. Be
             concise and helpful with your responses. Refrain from restating your tools' descriptions unless it is explicitly requested.
         `,
-	});
+	})
 
-	const config = { configurable: { thread_id: "Aptos Agent Kit!" } };
+	const config = { configurable: { thread_id: "Aptos Agent Kit!" } }
 
 	const processUserChoice = async () => {
 		try {
@@ -115,14 +116,14 @@ export const main = async () => {
 						choices: promptOptions,
 						pageSize: promptOptions.length,
 					},
-				]);
+				])
 
 				if (action === "exit") {
-					console.log("Exiting...");
-					return;
+					console.log("Exiting...")
+					return
 				}
 
-				let prompt = action;
+				let prompt = action
 				if (action === "custom") {
 					const { customPrompt } = await inquirer.prompt([
 						{
@@ -131,47 +132,47 @@ export const main = async () => {
 							message: "Enter your custom prompt:",
 							validate: (input) => {
 								if (input.trim().length === 0) {
-									return "Prompt cannot be empty";
+									return "Prompt cannot be empty"
 								}
-								return true;
+								return true
 							},
 						},
-					]);
-					prompt = customPrompt;
+					])
+					prompt = customPrompt
 				}
 
-				console.log(`\nExecuting: ${prompt}\n`);
+				console.log(`\nExecuting: ${prompt}\n`)
 
 				const stream = await agent.stream(
 					{
 						messages: [new HumanMessage(prompt)],
 					},
-					config,
-				);
+					config
+				)
 
 				for await (const chunk of stream) {
 					if ("agent" in chunk) {
-						console.log(chunk.agent.messages[0].content);
+						console.log(chunk.agent.messages[0].content)
 					} else if ("tools" in chunk) {
-						console.log(chunk.tools.messages[0].content);
+						console.log(chunk.tools.messages[0].content)
 					}
-					console.log("-------------------");
+					console.log("-------------------")
 				}
 
-				await new Promise((resolve) => setTimeout(resolve, 1000));
+				await new Promise((resolve) => setTimeout(resolve, 1000))
 			}
 		} catch (error) {
-			console.error("An error occurred:", error);
-			process.exit(1);
+			console.error("An error occurred:", error)
+			process.exit(1)
 		}
-	};
+	}
 
-	await processUserChoice();
-};
+	await processUserChoice()
+}
 
 process.on("unhandledRejection", (error) => {
-	console.error("An error occurred:", error);
-	process.exit(1);
-});
+	console.error("An error occurred:", error)
+	process.exit(1)
+})
 
-main().catch((e) => console.log("error", e));
+main().catch((e) => console.log("error", e))

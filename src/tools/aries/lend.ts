@@ -1,5 +1,5 @@
-import { MoveStructId } from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import type { MoveStructId } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Lend tokens in Aries
@@ -8,35 +8,30 @@ import { AgentRuntime } from "../../agent";
  * @param amount Amount to lend
  * @returns Transaction signature
  */
-export async function lendAriesToken(
-	agent: AgentRuntime,
-	mintType: MoveStructId,
-	amount: number,
-): Promise<string> {
+export async function lendAriesToken(agent: AgentRuntime, mintType: MoveStructId, amount: number): Promise<string> {
 	try {
 		const transaction = await agent.aptos.transaction.build.simple({
 			sender: agent.account.getAddress(),
 			data: {
-				function: `0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit`,
+				function: "0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::deposit",
 				typeArguments: [mintType],
 				functionArguments: ["Main account", amount, false],
 			},
-		});
+		})
 
-		const committedTransactionHash =
-			await agent.account.sendTransaction(transaction);
+		const committedTransactionHash = await agent.account.sendTransaction(transaction)
 
 		const signedTransaction = await agent.aptos.waitForTransaction({
 			transactionHash: committedTransactionHash,
-		});
+		})
 
 		if (!signedTransaction.success) {
-			console.error(signedTransaction, "Lend failed");
-			throw new Error("Lend failed");
+			console.error(signedTransaction, "Lend failed")
+			throw new Error("Lend failed")
 		}
 
-		return signedTransaction.hash;
+		return signedTransaction.hash
 	} catch (error: any) {
-		throw new Error(`Lend failed: ${error.message}`);
+		throw new Error(`Lend failed: ${error.message}`)
 	}
 }

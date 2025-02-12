@@ -1,9 +1,9 @@
-import { END, START, StateGraph } from "@langchain/langgraph";
-import { StateAnnotation } from "./state";
-import { managerNode, managerRouter } from "./agents/manager";
-import { aptosReadNode } from "./agents/aptos-read-agent";
-import { writerNode, writerTool } from "./agents/tweet-writer-agent";
-import { postNode, postOnXTool } from "./agents/x-post-agent";
+import { END, START, StateGraph } from "@langchain/langgraph"
+import { aptosReadNode } from "./agents/aptos-read-agent"
+import { managerNode, managerRouter } from "./agents/manager"
+import { writerNode, writerTool } from "./agents/tweet-writer-agent"
+import { postNode, postOnXTool } from "./agents/x-post-agent"
+import { StateAnnotation } from "./state"
 
 const workflow = new StateGraph(StateAnnotation)
 	.addNode("manager", managerNode)
@@ -17,6 +17,6 @@ const workflow = new StateGraph(StateAnnotation)
 	.addEdge("tweetWriter", "postOnTwitter")
 	.addEdge("aptosRead", "tweetWriter")
 	.addEdge("aptosRead", "postOnTwitter")
-	.addEdge("postOnTwitter", END);
+	.addEdge("postOnTwitter", END)
 
-export const graph = workflow.compile();
+export const graph = workflow.compile()

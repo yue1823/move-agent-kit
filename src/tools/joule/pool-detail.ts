@@ -1,4 +1,4 @@
-import { AgentRuntime } from "../../agent";
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Get details about a specific pool
@@ -11,24 +11,21 @@ import { AgentRuntime } from "../../agent";
  * const otherPoolDetails = await getPoolDetails(agent, otherCoinAddress); // For other token pool
  * ```
  */
-export async function getPoolDetails(
-	agent: AgentRuntime,
-	mint: string,
-): Promise<any> {
+export async function getPoolDetails(agent: AgentRuntime, mint: string): Promise<any> {
 	try {
 		const transaction = await agent.aptos.view({
 			payload: {
-				function: `0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::pool_details`,
+				function: "0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::pool_details",
 				functionArguments: [mint],
 			},
-		});
+		})
 
 		if (!transaction) {
-			throw new Error("Failed to fetch pool details");
+			throw new Error("Failed to fetch pool details")
 		}
 
-		return transaction;
+		return transaction
 	} catch (error: any) {
-		throw new Error(`Failed to get pool details: ${error.message}`);
+		throw new Error(`Failed to get pool details: ${error.message}`)
 	}
 }

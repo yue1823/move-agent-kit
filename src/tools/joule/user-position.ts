@@ -1,5 +1,5 @@
-import { AccountAddress } from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import type { AccountAddress } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Get details about a user's position
@@ -15,23 +15,22 @@ import { AgentRuntime } from "../../agent";
 export async function getUserPosition(
 	agent: AgentRuntime,
 	userAddress: AccountAddress | string,
-	positionId: string,
+	positionId: string
 ): Promise<any> {
 	try {
 		const transaction = await agent.aptos.view({
 			payload: {
-				function:
-					"0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::user_position_details",
+				function: "0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::user_position_details",
 				functionArguments: [userAddress.toString(), positionId],
 			},
-		});
+		})
 
 		if (!transaction) {
-			throw new Error("Failed to fetch user position");
+			throw new Error("Failed to fetch user position")
 		}
 
-		return transaction;
+		return transaction
 	} catch (error: any) {
-		throw new Error(`Failed to get user position: ${error.message}`);
+		throw new Error(`Failed to get user position: ${error.message}`)
 	}
 }

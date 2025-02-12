@@ -1,4 +1,4 @@
-import { AccountAuthenticator } from "@aptos-labs/ts-sdk";
+import type { AccountAuthenticator } from "@aptos-labs/ts-sdk"
 
 export type ToolsNameList =
 	| "aptos_balance"
@@ -40,9 +40,9 @@ export type ToolsNameList =
 	| "echelon_lend_token"
 	| "echelon_withdraw_token"
 	| "echelon_borrow_token"
-	| "echelon_repay_token";
+	| "echelon_repay_token"
 
 export type SignedTransactionResponse = {
-	senderAuthenticator?: AccountAuthenticator;
-	signature?: Uint8Array<ArrayBufferLike>;
-};
+	senderAuthenticator?: AccountAuthenticator
+	signature?: Uint8Array<ArrayBufferLike>
+}
