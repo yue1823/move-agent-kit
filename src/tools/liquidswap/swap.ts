@@ -1,8 +1,5 @@
-import {
-	convertAmountFromHumanReadableToOnChain,
-	MoveStructId,
-} from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import { type MoveStructId, convertAmountFromHumanReadableToOnChain } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Swap tokens in liquidswap
@@ -18,13 +15,13 @@ export async function swap(
 	mintX: MoveStructId,
 	mintY: MoveStructId,
 	swapAmount: number,
-	minCoinOut = 0,
+	minCoinOut = 0
 ): Promise<string> {
 	try {
 		const transaction = await agent.aptos.transaction.build.simple({
 			sender: agent.account.getAddress(),
 			data: {
-				function: `0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap`,
+				function: "0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::scripts_v2::swap",
 				typeArguments: [
 					mintX,
 					mintY,
@@ -32,22 +29,21 @@ export async function swap(
 				],
 				functionArguments: [swapAmount, minCoinOut],
 			},
-		});
+		})
 
-		const committedTransactionHash =
-			await agent.account.sendTransaction(transaction);
+		const committedTransactionHash = await agent.account.sendTransaction(transaction)
 
 		const signedTransaction = await agent.aptos.waitForTransaction({
 			transactionHash: committedTransactionHash,
-		});
+		})
 
 		if (!signedTransaction.success) {
-			console.error(signedTransaction, "Swap failed");
-			throw new Error("Swap failed");
+			console.error(signedTransaction, "Swap failed")
+			throw new Error("Swap failed")
 		}
 
-		return signedTransaction.hash;
+		return signedTransaction.hash
 	} catch (error: any) {
-		throw new Error(`Swap failed: ${error.message}`);
+		throw new Error(`Swap failed: ${error.message}`)
 	}
 }

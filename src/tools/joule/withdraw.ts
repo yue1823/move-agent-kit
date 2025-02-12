@@ -1,9 +1,5 @@
-import {
-	AccountAddress,
-	InputGenerateTransactionPayloadData,
-	MoveStructId,
-} from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import { AccountAddress, type InputGenerateTransactionPayloadData, type MoveStructId } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Withdraw APT, tokens or fungible asset from a position
@@ -24,56 +20,48 @@ export async function withdrawToken(
 	amount: number,
 	mint: MoveStructId,
 	positionId: string,
-	fungibleAsset: boolean,
+	fungibleAsset: boolean
 ): Promise<{
-	hash: string;
-	positionId: string;
+	hash: string
+	positionId: string
 }> {
-	const pyth_update_data = await agent.getPythData();
+	const pyth_update_data = await agent.getPythData()
 
-	let DEFAULT_FUNCTIONAL_ARGS = [positionId, amount, pyth_update_data];
+	const DEFAULT_FUNCTIONAL_ARGS = [positionId, amount, pyth_update_data]
 
-	let COIN_STANDARD_DATA: InputGenerateTransactionPayloadData = {
-		function: `0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::withdraw`,
+	const COIN_STANDARD_DATA: InputGenerateTransactionPayloadData = {
+		function: "0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::withdraw",
 		typeArguments: [mint.toString()],
 		functionArguments: DEFAULT_FUNCTIONAL_ARGS,
-	};
+	}
 
-	let FUNGIBLE_ASSET_DATA: InputGenerateTransactionPayloadData = {
-		function: `0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::withdraw_fa`,
-		functionArguments: [
-			positionId,
-			mint.toString(),
-			amount,
-			pyth_update_data
-		],
-	};
+	const FUNGIBLE_ASSET_DATA: InputGenerateTransactionPayloadData = {
+		function: "0x2fe576faa841347a9b1b32c869685deb75a15e3f62dfe37cbd6d52cc403a16f6::pool::withdraw_fa",
+		functionArguments: [positionId, mint.toString(), amount, pyth_update_data],
+	}
 
 	try {
 		const transaction = await agent.aptos.transaction.build.simple({
 			sender: agent.account.getAddress(),
-			data: fungibleAsset
-				? FUNGIBLE_ASSET_DATA
-				: COIN_STANDARD_DATA,
-		});
+			data: fungibleAsset ? FUNGIBLE_ASSET_DATA : COIN_STANDARD_DATA,
+		})
 
-		const committedTransactionHash =
-			await agent.account.sendTransaction(transaction);
+		const committedTransactionHash = await agent.account.sendTransaction(transaction)
 
 		const signedTransaction = await agent.aptos.waitForTransaction({
 			transactionHash: committedTransactionHash,
-		});
+		})
 
 		if (!signedTransaction.success) {
-			console.error(signedTransaction, "Token withdraw failed");
-			throw new Error("Token withdraw failed");
+			console.error(signedTransaction, "Token withdraw failed")
+			throw new Error("Token withdraw failed")
 		}
 
 		return {
 			hash: signedTransaction.hash,
 			positionId,
-		};
+		}
 	} catch (error: any) {
-		throw new Error(`Token withdraw failed: ${error.message}`);
+		throw new Error(`Token withdraw failed: ${error.message}`)
 	}
 }

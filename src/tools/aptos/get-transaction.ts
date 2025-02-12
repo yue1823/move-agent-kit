@@ -1,7 +1,5 @@
-import {
-	TransactionResponse,
-} from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import type { TransactionResponse } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Fetches transaction from aptos
@@ -13,17 +11,14 @@ import { AgentRuntime } from "../../agent";
  * const transaction = await getTransaction(agent, "HASH")
  * ```
  */
-export async function getTransaction(
-	agent: AgentRuntime,
-	hash: string,
-): Promise<TransactionResponse> {
+export async function getTransaction(agent: AgentRuntime, hash: string): Promise<TransactionResponse> {
 	try {
 		const transaction = await agent.aptos.getTransactionByHash({
-			transactionHash: hash
+			transactionHash: hash,
 		})
 
-		return transaction;
+		return transaction
 	} catch (error: any) {
-		throw new Error(`Token transfer failed: ${error.message}`);
+		throw new Error(`Token transfer failed: ${error.message}`)
 	}
 }

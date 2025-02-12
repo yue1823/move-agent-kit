@@ -1,5 +1,5 @@
-import { MoveStructId } from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import type { MoveStructId } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Remove liquidity from liquidswap
@@ -17,13 +17,13 @@ export async function removeLiquidity(
 	mintY: MoveStructId,
 	lpAmount: number,
 	minMintX = 0,
-	minMintY = 0,
+	minMintY = 0
 ): Promise<string> {
 	try {
 		const transaction = await agent.aptos.transaction.build.simple({
 			sender: agent.account.getAddress(),
 			data: {
-				function: `0x9dd974aea0f927ead664b9e1c295e4215bd441a9fb4e53e5ea0bf22f356c8a2b::router::remove_liquidity_v05`,
+				function: "0x9dd974aea0f927ead664b9e1c295e4215bd441a9fb4e53e5ea0bf22f356c8a2b::router::remove_liquidity_v05",
 				typeArguments: [
 					mintX,
 					mintY,
@@ -31,22 +31,21 @@ export async function removeLiquidity(
 				],
 				functionArguments: [lpAmount, minMintX, minMintY],
 			},
-		});
+		})
 
-		const committedTransactionHash =
-			await agent.account.sendTransaction(transaction);
+		const committedTransactionHash = await agent.account.sendTransaction(transaction)
 
 		const signedTransaction = await agent.aptos.waitForTransaction({
 			transactionHash: committedTransactionHash,
-		});
+		})
 
 		if (!signedTransaction.success) {
-			console.error(signedTransaction, "Remove liquidity failed");
-			throw new Error("Remove liquidity failed");
+			console.error(signedTransaction, "Remove liquidity failed")
+			throw new Error("Remove liquidity failed")
 		}
 
-		return signedTransaction.hash;
+		return signedTransaction.hash
 	} catch (error: any) {
-		throw new Error(`Remove liquidity failed: ${error.message}`);
+		throw new Error(`Remove liquidity failed: ${error.message}`)
 	}
 }

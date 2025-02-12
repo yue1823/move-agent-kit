@@ -1,8 +1,5 @@
-import {
-	InputGenerateTransactionPayloadData,
-	MoveStructId,
-} from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import type { InputGenerateTransactionPayloadData, MoveStructId } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Withdraw tokens from Echelon
@@ -18,41 +15,40 @@ export async function withdrawTokenWithEchelon(
 	mintType: MoveStructId,
 	amount: number,
 	poolAddress: string,
-	fungibleAsset: boolean,
+	fungibleAsset: boolean
 ): Promise<string> {
 	try {
-		const FUNCTIONAL_ARGS_DATA = [poolAddress, amount];
+		const FUNCTIONAL_ARGS_DATA = [poolAddress, amount]
 
 		const COIN_STANDARD_DATA: InputGenerateTransactionPayloadData = {
-			function: `0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::scripts::withdraw`,
+			function: "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::scripts::withdraw",
 			typeArguments: [mintType.toString()],
 			functionArguments: FUNCTIONAL_ARGS_DATA,
-		};
+		}
 
 		const FUNGIBLE_ASSET_DATA: InputGenerateTransactionPayloadData = {
-			function: `0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::scripts::withdraw_fa`,
+			function: "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::scripts::withdraw_fa",
 			functionArguments: FUNCTIONAL_ARGS_DATA,
-		};
+		}
 
 		const transaction = await agent.aptos.transaction.build.simple({
 			sender: agent.account.getAddress(),
 			data: fungibleAsset ? FUNGIBLE_ASSET_DATA : COIN_STANDARD_DATA,
-		});
+		})
 
-		const committedTransactionHash =
-			await agent.account.sendTransaction(transaction);
+		const committedTransactionHash = await agent.account.sendTransaction(transaction)
 
 		const signedTransaction = await agent.aptos.waitForTransaction({
 			transactionHash: committedTransactionHash,
-		});
+		})
 
 		if (!signedTransaction.success) {
-			console.error(signedTransaction, "Withdraw failed");
-			throw new Error("Withdraw failed");
+			console.error(signedTransaction, "Withdraw failed")
+			throw new Error("Withdraw failed")
 		}
 
-		return signedTransaction.hash;
+		return signedTransaction.hash
 	} catch (error: any) {
-		throw new Error(`Withdraw failed: ${error.message}`);
+		throw new Error(`Withdraw failed: ${error.message}`)
 	}
 }

@@ -3,10 +3,14 @@ import { graph } from "../src"
 
 const main = async () => {
 	const result = await graph.invoke({
-		messages: [new HumanMessage("Get USDT pool details on joule and create a bull post for it and post it on twitter yourself")]
+		messages: [
+			new HumanMessage("Get USDT pool details on joule and create a bull post for it and post it on twitter yourself"),
+		],
 	})
 
 	console.log(result)
 }
 
-main().then().catch(e => console.log(e))
+main()
+	.then()
+	.catch((e) => console.log(e))

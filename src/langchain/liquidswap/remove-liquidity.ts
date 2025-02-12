@@ -5,8 +5,8 @@ import { parseFungibleAssetAddressToWrappedAssetAddress } from "../../utils/pars
 import { getTokenByTokenName } from "../../utils/get-pool-address-by-token-name";
 
 export class LiquidSwapRemoveLiquidityTool extends Tool {
-	name = "liquidswap_remove_liquidity";
-	description = `this tool can be used to remove liquidity from liquidswap
+  name = "liquidswap_remove_liquidity";
+  description = `this tool can be used to remove liquidity from liquidswap
 
     if you want to remove APT and one of the token, mint will be "0x1::aptos_coin::AptosCoin"
 
@@ -26,72 +26,64 @@ export class LiquidSwapRemoveLiquidityTool extends Tool {
     minMintY: number, eg 1 or 0.01 (optional)
     `;
 
-	constructor(private agent: AgentRuntime) {
-		super();
-	}
+  constructor(private agent: AgentRuntime) {
+    super();
+  }
 
-	protected async _call(input: string): Promise<string> {
-		try {
-			const parsedInput = parseJson(input);
+  protected async _call(input: string): Promise<string> {
+    try {
+      const parsedInput = parseJson(input);
 
-			// Resolve token names to addresses
-			let mintX = parsedInput.mintX;
-			const tokenX = getTokenByTokenName(mintX);
-			if (tokenX) {
-				mintX = tokenX.tokenAddress;
-			}
+      // Resolve token names to addresses
+      let mintX = parsedInput.mintX;
+      const tokenX = getTokenByTokenName(mintX);
+      if (tokenX) {
+        mintX = tokenX.tokenAddress;
+      }
 
-			let mintY = parsedInput.mintY;
-			const tokenY = getTokenByTokenName(mintY);
-			if (tokenY) {
-				mintY = tokenY.tokenAddress;
-			}
+      let mintY = parsedInput.mintY;
+      const tokenY = getTokenByTokenName(mintY);
+      if (tokenY) {
+        mintY = tokenY.tokenAddress;
+      }
 
-			const mintXDetail = await this.agent.getTokenDetails(
-				mintX,
-			);
-			const mintYDetail = await this.agent.getTokenDetails(
-				mintY,
-			);
+      const mintXDetail = await this.agent.getTokenDetails(mintX);
+      const mintYDetail = await this.agent.getTokenDetails(mintY);
 
-			const removeLiquidityTransactionHash =
-				await this.agent.removeLiquidity(
-					parseFungibleAssetAddressToWrappedAssetAddress(mintX),
-					parseFungibleAssetAddressToWrappedAssetAddress(mintY),
-					convertAmountFromHumanReadableToOnChain(
-						parsedInput.lpAmount,
-						6,
-					),
-					convertAmountFromHumanReadableToOnChain(
-						parsedInput.minMintX || 0,
-						mintXDetail.decimals,
-					),
-					convertAmountFromHumanReadableToOnChain(
-						parsedInput.minMintY || 0,
-						mintYDetail.decimals,
-					),
-				);
+      const removeLiquidityTransactionHash = await this.agent.removeLiquidity(
+        parseFungibleAssetAddressToWrappedAssetAddress(mintX),
+        parseFungibleAssetAddressToWrappedAssetAddress(mintY),
+        convertAmountFromHumanReadableToOnChain(parsedInput.lpAmount, 6),
+        convertAmountFromHumanReadableToOnChain(
+          parsedInput.minMintX || 0,
+          mintXDetail.decimals
+        ),
+        convertAmountFromHumanReadableToOnChain(
+          parsedInput.minMintY || 0,
+          mintYDetail.decimals
+        )
+      );
 
-			return JSON.stringify({
-				status: "success",
-				removeLiquidityTransactionHash,
-				token: [
-					{
-						mintX: mintXDetail.name,
-						decimals: mintXDetail.decimals,
-					},
-					{
-						mintY: mintYDetail.name,
-						decimals: mintYDetail.decimals,
-					},
-				],
-			});
-		} catch (error: any) {
-			return JSON.stringify({
-				status: "error",
-				message: error.message,
-				code: error.code || "UNKNOWN_ERROR",
-			});
-		}
-	}
+      return JSON.stringify({
+        status: "success",
+        removeLiquidityTransactionHash,
+        token: [
+          {
+            mintX: mintXDetail.name,
+            decimals: mintXDetail.decimals,
+          },
+          {
+            mintY: mintYDetail.name,
+            decimals: mintYDetail.decimals,
+          },
+        ],
+      });
+    } catch (error: any) {
+      return JSON.stringify({
+        status: "error",
+        message: error.message,
+        code: error.code || "UNKNOWN_ERROR",
+      });
+    }
+  }
 }

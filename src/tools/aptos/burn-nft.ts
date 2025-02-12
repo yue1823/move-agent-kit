@@ -1,5 +1,5 @@
-import { AccountAddress, Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
-import { AgentRuntime } from "../../agent";
+import { type AccountAddress, Aptos, AptosConfig } from "@aptos-labs/ts-sdk"
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Burn NFT
@@ -7,11 +7,8 @@ import { AgentRuntime } from "../../agent";
  * @param mint NFT mint address
  * @returns Transaction signature
  */
-export async function burnNFT(
-	agent: AgentRuntime,
-	mint: AccountAddress,
-): Promise<string> {
-	return "";
+export async function burnNFT(agent: AgentRuntime, mint: AccountAddress): Promise<string> {
+	return ""
 	//  try {
 	//    const transaction = await agent.aptos.burnDigitalAssetTransaction({
 	//      creator: agent.account.getAccount(),
