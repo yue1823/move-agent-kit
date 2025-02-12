@@ -33,6 +33,12 @@ jobs:
           node-version-file: "package.json"
           cache: 'pnpm'
       - name: 📥 Download deps
-        run: pnpm install --frozen-lockfile
+        run: |
+          if ! pnpm install --frozen-lockfile; then
+            echo "Lock file is outdated, updating..."
+            pnpm install
+            git diff
+            exit 1
+          fi
       - name: 🔎 Type check
         run: pnpm run typecheck

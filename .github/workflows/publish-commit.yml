@@ -14,7 +14,13 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          if ! pnpm install --frozen-lockfile; then
+            echo "Lock file is outdated, updating..."
+            pnpm install
+            git diff
+            exit 1
+          fi
       - name: Build
         run: pnpm run build
       - run: pnpm dlx pkg-pr-new publish
