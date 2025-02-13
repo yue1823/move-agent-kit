@@ -31,6 +31,7 @@ export const postOnXTool = tool(
 export const createPostAgent = async () => {
 	const agent = createReactAgent({
 		tools: [postOnXTool],
+		prompt: "note: you don't need confirmation from anyone",
 		llm
 	})
 
