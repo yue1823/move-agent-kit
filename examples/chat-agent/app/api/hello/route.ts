@@ -1,122 +1,101 @@
-import { NextResponse } from "next/server";
-import { ChatAnthropic } from "@langchain/anthropic";
-import { MemorySaver } from "@langchain/langgraph";
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import {
-	AgentRuntime,
-	LocalSigner,
-	createAptosTools,
-} from "move-agent-kit";
-import {
-	Aptos,
-	AptosConfig,
-	Ed25519PrivateKey,
-	Network,
-	PrivateKey,
-	PrivateKeyVariants,
-} from "@aptos-labs/ts-sdk";
-import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
-import {
-	AIMessage,
-	BaseMessage,
-	ChatMessage,
-	HumanMessage,
-} from "@langchain/core/messages";
+import { Aptos, AptosConfig, Ed25519PrivateKey, Network, PrivateKey, PrivateKeyVariants } from "@aptos-labs/ts-sdk"
+import { ChatAnthropic } from "@langchain/anthropic"
+import { AIMessage, BaseMessage, ChatMessage, HumanMessage } from "@langchain/core/messages"
+import { MemorySaver } from "@langchain/langgraph"
+import { createReactAgent } from "@langchain/langgraph/prebuilt"
+import { StreamingTextResponse, Message as VercelChatMessage } from "ai"
+import { AgentRuntime, LocalSigner, createAptosTools } from "move-agent-kit"
+import { NextResponse } from "next/server"
 
 const llm = new ChatAnthropic({
 	temperature: 0.7,
 	model: "claude-3-5-sonnet-latest",
 	apiKey: process.env.ANTHROPIC_API_KEY,
-});
+})
 
-const textDecoder = new TextDecoder();
+const textDecoder = new TextDecoder()
 
 // Function to read and process the stream
 async function readStream(stream: any) {
 	try {
 		// Create a reader from the stream
-		const reader = stream.getReader();
+		const reader = stream.getReader()
 
-		let result = "";
+		let result = ""
 
 		while (true) {
 			// Read each chunk from the stream
-			const { done, value } = await reader.read();
+			const { done, value } = await reader.read()
 
 			// If the stream is finished, break the loop
 			if (done) {
-				break;
+				break
 			}
 
 			// Decode the chunk and append to result
-			result += textDecoder.decode(value, { stream: true });
+			result += textDecoder.decode(value, { stream: true })
 		}
 
 		// Final decode to handle any remaining bytes
-		result += textDecoder.decode();
+		result += textDecoder.decode()
 
-		return result;
+		return result
 	} catch (error) {
-		console.error("Error reading stream:", error);
-		throw error;
+		console.error("Error reading stream:", error)
+		throw error
 	}
 }
 
 const convertVercelMessageToLangChainMessage = (message: VercelChatMessage) => {
 	if (message.role === "user") {
-		return new HumanMessage(message.content);
+		return new HumanMessage(message.content)
 	} else if (message.role === "assistant") {
-		return new AIMessage(message.content);
+		return new AIMessage(message.content)
 	} else {
-		return new ChatMessage(message.content, message.role);
+		return new ChatMessage(message.content, message.role)
 	}
-};
+}
 
 const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
 	if (message._getType() === "human") {
-		return { content: message.content, role: "user" };
+		return { content: message.content, role: "user" }
 	} else if (message._getType() === "ai") {
 		return {
 			content: message.content,
 			role: "assistant",
 			tool_calls: (message as AIMessage).tool_calls,
-		};
+		}
 	} else {
-		return { content: message.content, role: message._getType() };
+		return { content: message.content, role: message._getType() }
 	}
-};
+}
 
 export async function POST(request: Request) {
 	try {
 		// Initialize Aptos configuration
 		const aptosConfig = new AptosConfig({
 			network: Network.MAINNET,
-		});
+		})
 
-		const aptos = new Aptos(aptosConfig);
+		const aptos = new Aptos(aptosConfig)
 
 		// Validate and get private key from environment
-		const privateKeyStr = process.env.APTOS_PRIVATE_KEY;
+		const privateKeyStr = process.env.APTOS_PRIVATE_KEY
 		if (!privateKeyStr) {
-			throw new Error("Missing APTOS_PRIVATE_KEY environment variable");
+			throw new Error("Missing APTOS_PRIVATE_KEY environment variable")
 		}
 
 		// Setup account and signer
 		const account = await aptos.deriveAccountFromPrivateKey({
-			privateKey: new Ed25519PrivateKey(
-				PrivateKey.formatPrivateKey(
-					privateKeyStr,
-					PrivateKeyVariants.Ed25519,
-				),
-			),
-		});
+			privateKey: new Ed25519PrivateKey(PrivateKey.formatPrivateKey(privateKeyStr, PrivateKeyVariants.Ed25519)),
+		})
 
-		const signer = new LocalSigner(account, Network.MAINNET);
+		const signer = new LocalSigner(account, Network.MAINNET)
 		const aptosAgent = new AgentRuntime(signer, aptos, {
 			PANORA_API_KEY: process.env.PANORA_API_KEY,
-		});
-		const tools = createAptosTools(aptosAgent);
-		const memory = new MemorySaver();
+		})
+		const tools = createAptosTools(aptosAgent)
+		const memory = new MemorySaver()
 
 		// Create React agent
 		const agent = createReactAgent({
@@ -135,12 +114,12 @@ export async function POST(request: Request) {
 		The response also contains token/token[] which contains the name and address of the token and the decimals.
 		WHEN YOU RETURN ANY TOKEN AMOUNTS, RETURN THEM ACCORDING TO THE DECIMALS OF THE TOKEN.
       `,
-		});
+		})
 
 		// Parse request body
-		const body = await request.json();
-		const messages = body.messages ?? [];
-		const showIntermediateSteps = body.show_intermediate_steps ?? false;
+		const body = await request.json()
+		const messages = body.messages ?? []
+		const showIntermediateSteps = body.show_intermediate_steps ?? false
 
 		if (!showIntermediateSteps) {
 			/**
@@ -162,10 +141,10 @@ export async function POST(request: Request) {
 					configurable: {
 						thread_id: "Aptos Agent Kit!",
 					},
-				},
-			);
+				}
+			)
 
-			const textEncoder = new TextEncoder();
+			const textEncoder = new TextEncoder()
 			const transformStream = new ReadableStream({
 				async start(controller) {
 					for await (const { event, data } of eventStream) {
@@ -173,40 +152,29 @@ export async function POST(request: Request) {
 							if (event === "on_chat_model_stream") {
 								if (data.chunk.content) {
 									// Handle array of objects with delta content
-									const content = data.chunk.content;
+									const content = data.chunk.content
 									if (Array.isArray(content)) {
 										for (const item of content) {
-											if (
-												item.type === "text_delta" &&
-												item.text
-											) {
-												controller.enqueue(
-													textEncoder.encode(
-														item.text,
-													),
-												);
+											if (item.type === "text_delta" && item.text) {
+												controller.enqueue(textEncoder.encode(item.text))
 											}
 										}
 									} else if (typeof content === "string") {
 										// Handle direct string content
-										controller.enqueue(
-											textEncoder.encode(content),
-										);
+										controller.enqueue(textEncoder.encode(content))
 									} else if (content.text) {
 										// Handle object with text property
-										controller.enqueue(
-											textEncoder.encode(content.text),
-										);
+										controller.enqueue(textEncoder.encode(content.text))
 									}
 								}
 							}
 						}
 					}
-					controller.close();
+					controller.close()
 				},
-			});
+			})
 
-			console.log("transformStream", transformStream);
+			console.log("transformStream", transformStream)
 
 			//try {
 			//	const decodedContent = await readStream(transformStream);
@@ -217,37 +185,32 @@ export async function POST(request: Request) {
 			//	throw error;
 			//  }
 
-			return new StreamingTextResponse(transformStream);
+			return new StreamingTextResponse(transformStream)
 		} else {
 			/**
 			 * We could also pick intermediate steps out from `streamEvents` chunks, but
 			 * they are generated as JSON objects, so streaming and displaying them with
 			 * the AI SDK is more complicated.
 			 */
-			const result = await agent.invoke({ messages });
+			const result = await agent.invoke({ messages })
 
-			console.log("result", result);
+			console.log("result", result)
 
 			return NextResponse.json(
 				{
-					messages: result.messages.map(
-						convertLangChainMessageToVercelMessage,
-					),
+					messages: result.messages.map(convertLangChainMessageToVercelMessage),
 				},
-				{ status: 200 },
-			);
+				{ status: 200 }
+			)
 		}
 	} catch (error: any) {
-		console.error("Request error:", error);
+		console.error("Request error:", error)
 		return NextResponse.json(
 			{
-				error:
-					error instanceof Error
-						? error.message
-						: "An error occurred",
+				error: error instanceof Error ? error.message : "An error occurred",
 				status: "error",
 			},
-			{ status: error instanceof Error && "status" in error ? 500 : 500 },
-		);
+			{ status: error instanceof Error && "status" in error ? 500 : 500 }
+		)
 	}
 }

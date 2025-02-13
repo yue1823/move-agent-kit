@@ -1,4 +1,4 @@
-import { AgentRuntime } from "../../agent";
+import type { AgentRuntime } from "../../agent"
 
 /**
  * Create a profile in Aries
@@ -10,25 +10,24 @@ export async function createAriesProfile(agent: AgentRuntime): Promise<string> {
 		const transaction = await agent.aptos.transaction.build.simple({
 			sender: agent.account.getAddress(),
 			data: {
-				function: `0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::register_user`,
+				function: "0x9770fa9c725cbd97eb50b2be5f7416efdfd1f1554beb0750d4dae4c64e860da3::controller::register_user",
 				functionArguments: ["Main account"],
 			},
-		});
+		})
 
-		const committedTransactionHash =
-			await agent.account.sendTransaction(transaction);
+		const committedTransactionHash = await agent.account.sendTransaction(transaction)
 
 		const signedTransaction = await agent.aptos.waitForTransaction({
 			transactionHash: committedTransactionHash,
-		});
+		})
 
 		if (!signedTransaction.success) {
-			console.error(signedTransaction, "Create profile failed");
-			throw new Error("Create profile failed");
+			console.error(signedTransaction, "Create profile failed")
+			throw new Error("Create profile failed")
 		}
 
-		return signedTransaction.hash;
+		return signedTransaction.hash
 	} catch (error: any) {
-		throw new Error(`Create profile failed: ${error.message}`);
+		throw new Error(`Create profile failed: ${error.message}`)
 	}
 }

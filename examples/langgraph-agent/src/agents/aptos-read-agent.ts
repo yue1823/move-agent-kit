@@ -1,17 +1,17 @@
-import { StateAnnotation } from "../state";
+import { createReactAgent } from "@langchain/langgraph/prebuilt"
 import {
-	AptosTransactionTool,
 	AptosAccountAddressTool,
 	AptosBalanceTool,
-	AptosGetTokenPriceTool,
 	AptosGetTokenDetailTool,
+	AptosGetTokenPriceTool,
+	AptosTransactionTool,
 	JouleGetPoolDetails,
-} from "../../../../src/langchain";
-import { setupAgentKit } from "../agent";
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
+} from "../../../../src/langchain"
+import { setupAgentKit } from "../agent"
+import { StateAnnotation } from "../state"
 
 export const createAptosReadAgent = async () => {
-	const { agentRuntime, llm } = await setupAgentKit();
+	const { agentRuntime, llm } = await setupAgentKit()
 
 	const readAgentTools = [
 		new AptosBalanceTool(agentRuntime),
@@ -20,24 +20,24 @@ export const createAptosReadAgent = async () => {
 		new AptosTransactionTool(agentRuntime),
 		new AptosGetTokenPriceTool(agentRuntime),
 		new JouleGetPoolDetails(agentRuntime),
-	];
+	]
 
 	const readAgent = createReactAgent({
 		tools: readAgentTools,
 		llm: llm,
-	});
+	})
 
 	return readAgent
-};
+}
 
 export const aptosReadNode = async (state: typeof StateAnnotation.State) => {
-	const { messages } = state;
+	const { messages } = state
 
 	const readAgent = await createAptosReadAgent()
 
 	const result = await readAgent.invoke({ messages })
 
 	return {
-		messages: [...result.messages]
+		messages: [...result.messages],
 	}
-};
+}

@@ -1,9 +1,9 @@
-import { END, START, StateGraph } from "@langchain/langgraph";
-import { StateAnnotation } from "./state";
-import { managerNode, managerRouter } from "./agents/manager";
-import { aptosReadNode } from "./agents/aptos-read-agent";
-import { writerNode, writerTool } from "./agents/tweet-writer-agent";
-import { postNode, postOnXTool } from "./agents/x-post-agent";
+import { END, START, StateGraph } from "@langchain/langgraph"
+import { aptosReadNode } from "./agents/aptos-read-agent"
+import { managerNode, managerRouter } from "./agents/manager"
+import { writerNode, writerTool } from "./agents/tweet-writer-agent"
+import { postNode, postOnXTool } from "./agents/x-post-agent"
+import { StateAnnotation } from "./state"
 
 const workflow = new StateGraph(StateAnnotation)
 	.addNode("manager", managerNode)
@@ -18,6 +18,4 @@ const workflow = new StateGraph(StateAnnotation)
 	//.addEdge("aptosRead", END)
 	//.addEdge("tweetWriter", END)
 	// TODO: need to make sure the prompts recognize postOnTwitter tool before uncommenting above 2 lines
-	.addEdge("postOnTwitter", END);
-
-export const graph = workflow.compile();
+	.addEdge("postOnTwitter", END)

@@ -1,12 +1,12 @@
-import { z } from "zod";
+import type { z } from "zod"
 
 /**
  * Example of an action with input and output
  */
 export interface ActionExample {
-	input: Record<string, any>;
-	output: Record<string, any>;
-	explanation: string;
+	input: Record<string, any>
+	output: Record<string, any>
+	explanation: string
 }
 
 /**
@@ -14,8 +14,8 @@ export interface ActionExample {
  */
 export type Handler = (
 	agent: any, // Replace with the actual type of the move-agent
-	input: Record<string, any>,
-) => Promise<Record<string, any>>;
+	input: Record<string, any>
+) => Promise<Record<string, any>>
 
 /**
  * Main Action interface inspired by Solana Agent Kit
@@ -25,31 +25,31 @@ export interface Action {
 	/**
 	 * Unique name of the action
 	 */
-	name: string;
+	name: string
 
 	/**
 	 * Alternative names/phrases that can trigger this action
 	 */
-	similes: string[];
+	similes: string[]
 
 	/**
 	 * Detailed description of what the action does
 	 */
-	description: string;
+	description: string
 
 	/**
 	 * Array of example inputs and outputs for the action
 	 * Each inner array represents a group of related examples
 	 */
-	examples: ActionExample[][];
+	examples: ActionExample[][]
 
 	/**
 	 * Zod schema for input validation
 	 */
-	schema: z.ZodType<any>;
+	schema: z.ZodType<any>
 
 	/**
 	 * Function that executes the action
 	 */
-	handler: Handler;
+	handler: Handler
 }

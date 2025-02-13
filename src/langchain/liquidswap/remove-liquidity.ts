@@ -1,10 +1,10 @@
-import { Tool } from "langchain/tools";
-import { AgentRuntime, parseJson } from "../..";
-import { convertAmountFromHumanReadableToOnChain } from "@aptos-labs/ts-sdk";
-import { parseFungibleAssetAddressToWrappedAssetAddress } from "../../utils/parse-fungible-asset-to-wrapped-asset";
+import { convertAmountFromHumanReadableToOnChain } from "@aptos-labs/ts-sdk"
+import { Tool } from "langchain/tools"
+import { type AgentRuntime, parseJson } from "../.."
+import { parseFungibleAssetAddressToWrappedAssetAddress } from "../../utils/parse-fungible-asset-to-wrapped-asset"
 
 export class LiquidSwapRemoveLiquidityTool extends Tool {
-	name = "liquidswap_remove_liquidity";
+	name = "liquidswap_remove_liquidity"
 	description = `this tool can be used to remove liquidity from liquidswap
 
     if you want to remove APT and one of the token, mint will be "0x1::aptos_coin::AptosCoin"
@@ -19,44 +19,26 @@ export class LiquidSwapRemoveLiquidityTool extends Tool {
     lpAmount: number, eg 1 or 0.01 (required)
     minMintX: number, eg 1 or 0.01 (optional)
     minMintY: number, eg 1 or 0.01 (optional)
-    `;
+    `
 
 	constructor(private agent: AgentRuntime) {
-		super();
+		super()
 	}
 
 	protected async _call(input: string): Promise<string> {
 		try {
-			const parsedInput = parseJson(input);
+			const parsedInput = parseJson(input)
 
-			const mintXDetail = await this.agent.getTokenDetails(
-				parsedInput.mintX,
-			);
-			const mintYDetail = await this.agent.getTokenDetails(
-				parsedInput.mintY,
-			);
+			const mintXDetail = await this.agent.getTokenDetails(parsedInput.mintX)
+			const mintYDetail = await this.agent.getTokenDetails(parsedInput.mintY)
 
-			const removeLiquidityTransactionHash =
-				await this.agent.removeLiquidity(
-					parseFungibleAssetAddressToWrappedAssetAddress(
-						parsedInput.mintX,
-					),
-					parseFungibleAssetAddressToWrappedAssetAddress(
-						parsedInput.mintY,
-					),
-					convertAmountFromHumanReadableToOnChain(
-						parsedInput.lpAmount,
-						6,
-					),
-					convertAmountFromHumanReadableToOnChain(
-						parsedInput.minMintX || 0,
-						mintXDetail.decimals,
-					),
-					convertAmountFromHumanReadableToOnChain(
-						parsedInput.minMintY || 0,
-						mintYDetail.decimals,
-					),
-				);
+			const removeLiquidityTransactionHash = await this.agent.removeLiquidity(
+				parseFungibleAssetAddressToWrappedAssetAddress(parsedInput.mintX),
+				parseFungibleAssetAddressToWrappedAssetAddress(parsedInput.mintY),
+				convertAmountFromHumanReadableToOnChain(parsedInput.lpAmount, 6),
+				convertAmountFromHumanReadableToOnChain(parsedInput.minMintX || 0, mintXDetail.decimals),
+				convertAmountFromHumanReadableToOnChain(parsedInput.minMintY || 0, mintYDetail.decimals)
+			)
 
 			return JSON.stringify({
 				status: "success",
@@ -71,13 +53,13 @@ export class LiquidSwapRemoveLiquidityTool extends Tool {
 						decimals: mintYDetail.decimals,
 					},
 				],
-			});
+			})
 		} catch (error: any) {
 			return JSON.stringify({
 				status: "error",
 				message: error.message,
 				code: error.code || "UNKNOWN_ERROR",
-			});
+			})
 		}
 	}
 }

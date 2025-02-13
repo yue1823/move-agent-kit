@@ -1,12 +1,12 @@
-import { marked } from "marked";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "isomorphic-dompurify"
+import { marked } from "marked"
 
 interface MarkedOptions {
-	gfm: boolean;
-	breaks: boolean;
-	headerIds: boolean;
-	mangle: false;
-	highlight?: (code: string, lang: string) => string;
+	gfm: boolean
+	breaks: boolean
+	headerIds: boolean
+	mangle: false
+	highlight?: (code: string, lang: string) => string
 }
 
 // Configure marked options
@@ -17,15 +17,15 @@ const markedOptions: MarkedOptions = {
 	mangle: false, // Don't escape HTML
 	highlight: function (code: string, lang: string): string {
 		// You can add syntax highlighting here if needed
-		return code;
+		return code
 	},
-};
+}
 
-marked.setOptions(markedOptions);
+marked.setOptions(markedOptions)
 
 // Basic markdown to HTML conversion with sanitization
 export default function markdownToHtml(markdown: string) {
-	console.log(markdown, "markdown");
-	const rawHtml = marked.parse(markdown);
-	return DOMPurify.sanitize(rawHtml as string);
+	console.log(markdown, "markdown")
+	const rawHtml = marked.parse(markdown)
+	return DOMPurify.sanitize(rawHtml as string)
 }
