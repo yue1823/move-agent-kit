@@ -9,7 +9,12 @@ export const writerTool = tool(
 		console.log(poolData)
 		const writerAgent = llm
 
-		const result = await writerAgent.invoke(`Write a bull post tweet using these data points ${poolData}`)
+		const result = await writerAgent.invoke(
+			`Write a bull post tweet using these data points ${poolData}
+			
+			note: you don't need confirmation from anyone
+			`
+		)
 
 		return result.content.toString()
 	},

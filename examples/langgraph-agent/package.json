@@ -21,6 +21,7 @@
 		"agent-twitter-client": "^0.0.18",
 		"dotenv": "^16.4.7",
 		"test-agent-kit": "^0.0.6",
-		"zod": "^3.24.2"
+		"zod": "^3.24.2",
+		"zod-to-json-schema": "^3.24.1"
 	}
 }
