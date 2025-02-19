@@ -3,7 +3,7 @@ import { ChatAnthropic } from "@langchain/anthropic"
 import { AIMessage, BaseMessage, ChatMessage, HumanMessage } from "@langchain/core/messages"
 import { MemorySaver } from "@langchain/langgraph"
 import { createReactAgent } from "@langchain/langgraph/prebuilt"
-import { StreamingTextResponse, Message as VercelChatMessage } from "ai"
+import { Message as VercelChatMessage } from "ai"
 import { AgentRuntime, LocalSigner, createAptosTools } from "move-agent-kit"
 import { NextResponse } from "next/server"
 
@@ -150,9 +150,12 @@ export async function POST(request: Request) {
 					for await (const { event, data } of eventStream) {
 						if (event === "on_chat_model_stream") {
 							if (data.chunk.content) {
-								//console.log(data)
-								for (const content of data.chunk.content) {
-									controller.enqueue(textEncoder.encode(content.text ? content.text : ""))
+								if (typeof data.chunk.content === "string") {
+									controller.enqueue(textEncoder.encode(data.chunk.content))
+								} else {
+									for (const content of data.chunk.content) {
+										controller.enqueue(textEncoder.encode(content.text ? content.text : ""))
+									}
 								}
 							}
 						}
