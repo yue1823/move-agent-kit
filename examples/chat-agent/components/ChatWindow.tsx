@@ -17,20 +17,11 @@ export function ChatWindow(props: {
 	placeholder?: string
 	titleText?: string
 	emoji?: string
-	showIngestForm?: boolean
 	showIntermediateStepsToggle?: boolean
 }) {
 	const messageContainerRef = useRef<HTMLDivElement | null>(null)
 
-	const {
-		endpoint,
-		emptyStateComponent,
-		placeholder,
-		titleText = "An LLM",
-		showIngestForm,
-		showIntermediateStepsToggle,
-		emoji,
-	} = props
+	const { endpoint, emptyStateComponent, placeholder, titleText = "An LLM", showIntermediateStepsToggle, emoji } = props
 
 	const [showIntermediateSteps, setShowIntermediateSteps] = useState(false)
 	const [intermediateStepsLoading, setIntermediateStepsLoading] = useState(false)
@@ -191,7 +182,7 @@ export function ChatWindow(props: {
 				<div className="flex">{intemediateStepsToggle}</div>
 				<div className="flex w-full mt-4">
 					<input
-						className="text-black grow mr-8 p-4 rounded"
+						className="grow mr-8 p-4 rounded"
 						value={input}
 						placeholder={placeholder ?? "What's it like to be a pirate?"}
 						onChange={handleInputChange}

@@ -149,23 +149,10 @@ export async function POST(request: Request) {
 				async start(controller) {
 					for await (const { event, data } of eventStream) {
 						if (event === "on_chat_model_stream") {
-							if (event === "on_chat_model_stream") {
-								if (data.chunk.content) {
-									// Handle array of objects with delta content
-									const content = data.chunk.content
-									if (Array.isArray(content)) {
-										for (const item of content) {
-											if (item.type === "text_delta" && item.text) {
-												controller.enqueue(textEncoder.encode(item.text))
-											}
-										}
-									} else if (typeof content === "string") {
-										// Handle direct string content
-										controller.enqueue(textEncoder.encode(content))
-									} else if (content.text) {
-										// Handle object with text property
-										controller.enqueue(textEncoder.encode(content.text))
-									}
+							if (data.chunk.content) {
+								//console.log(data)
+								for (const content of data.chunk.content) {
+									controller.enqueue(textEncoder.encode(content.text ? content.text : ""))
 								}
 							}
 						}
@@ -174,7 +161,7 @@ export async function POST(request: Request) {
 				},
 			})
 
-			console.log("transformStream", transformStream)
+			//console.log("transformStream", transformStream)
 
 			//try {
 			//	const decodedContent = await readStream(transformStream);
@@ -185,7 +172,7 @@ export async function POST(request: Request) {
 			//	throw error;
 			//  }
 
-			return new StreamingTextResponse(transformStream)
+			return new Response(transformStream)
 		} else {
 			/**
 			 * We could also pick intermediate steps out from `streamEvents` chunks, but
