@@ -1,4 +1,4 @@
-import { type Account, type AnyRawTransaction, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk"
+import { type Account, AccountAddress, type AnyRawTransaction, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk"
 import type { InputTransactionData, SignMessagePayload, WalletContextState } from "@aptos-labs/wallet-adapter-react"
 import { BaseSigner } from "./base-signer"
 
@@ -13,9 +13,10 @@ export class WalletSigner extends BaseSigner {
 		super(account, aptos)
 	}
 
-	//  override getAccount(): Account {
-	//	return this.wallet
-	//  }
+	public override getAddress(): AccountAddress {
+		const walletAddress = this.wallet?.account?.address
+		return walletAddress ? AccountAddress.fromString(walletAddress) : this.account.accountAddress
+	}
 
 	async signTransaction(transaction: AnyRawTransaction) {
 		const senderAuthenticator = await this.wallet.signTransaction(transaction)
