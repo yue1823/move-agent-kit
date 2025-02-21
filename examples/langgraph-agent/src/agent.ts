@@ -19,7 +19,7 @@ export const llm = new ChatAnthropic({
 
 export const setupAgentKit = async () => {
 	const aptosConfig = new AptosConfig({
-		network: Network.MAINNET,
+		network: Network.TESTNET,
 	})
 	const aptos = new Aptos(aptosConfig)
 	const account = await aptos.deriveAccountFromPrivateKey({
@@ -27,7 +27,7 @@ export const setupAgentKit = async () => {
 			PrivateKey.formatPrivateKey(process.env.APTOS_PRIVATE_KEY as HexInput, PrivateKeyVariants.Ed25519)
 		),
 	})
-	const signer = new LocalSigner(account, Network.MAINNET)
+	const signer = new LocalSigner(account, Network.TESTNET)
 	const agentRuntime = new AgentRuntime(signer, aptos)
 
 	return {

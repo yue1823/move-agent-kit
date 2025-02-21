@@ -1,4 +1,4 @@
-import type { AccountAddress, Aptos, MoveStructId } from "@aptos-labs/ts-sdk"
+import { type AccountAddress, Aptos, AptosConfig, type MoveStructId, Network } from "@aptos-labs/ts-sdk"
 import { AptosPriceServiceConnection } from "@pythnetwork/pyth-aptos-js"
 import { priceFeed } from "./constants/price-feed"
 import type { BaseSigner } from "./signers"
@@ -40,6 +40,7 @@ import {
 	stakeTokenWithThala,
 	unstakeAPTWithThala,
 } from "./tools/thala"
+import { two_tag_tweet } from "./tools/twotag"
 
 import {
 	borrowTokenWithEchelon,
@@ -51,6 +52,10 @@ import { stakeTokenWithEcho, unstakeTokenWithEcho } from "./tools/echo"
 import { createImage } from "./tools/openai"
 import { getTokenByTokenName } from "./utils/get-pool-address-by-token-name"
 
+const aptosConfig = new AptosConfig({
+	network: Network.TESTNET,
+})
+
 export class AgentRuntime {
 	public account: BaseSigner
 	public aptos: Aptos
@@ -58,7 +63,7 @@ export class AgentRuntime {
 
 	constructor(account: BaseSigner, aptos: Aptos, config?: any) {
 		this.account = account
-		this.aptos = aptos
+		this.aptos = new Aptos(aptosConfig)
 		this.config = config ? config : {}
 	}
 
@@ -211,12 +216,6 @@ export class AgentRuntime {
 		return removeLiquidityWithThala(this, mintX, mintY, lpAmount)
 	}
 
-	// panora
-
-	swapWithPanora(fromToken: string, toToken: string, swapAmount: number, toWalletAddress?: string) {
-		return swapWithPanora(this, fromToken, toToken, swapAmount, toWalletAddress)
-	}
-
 	// openai
 
 	createImageWithOpenAI(prompt: string, size: "256x256" | "512x512" | "1024x1024", n: number) {
@@ -249,5 +248,16 @@ export class AgentRuntime {
 
 	borrowTokenWithEchelon(mintType: MoveStructId, amount: number, poolAddress: string, fungibleAsset: boolean) {
 		return borrowTokenWithEchelon(this, mintType, amount, poolAddress, fungibleAsset)
+	}
+
+	// panora
+
+	swapWithPanora(fromToken: string, toToken: string, swapAmount: number, toWalletAddress?: string) {
+		return swapWithPanora(this, fromToken, toToken, swapAmount, toWalletAddress)
+	}
+
+	// 2tag
+	two_tag_tweet(tag: string, text: string, to_address: string, nft_url: string) {
+		return two_tag_tweet(this, tag, text, to_address, nft_url)
 	}
 }

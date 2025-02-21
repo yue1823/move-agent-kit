@@ -27,7 +27,7 @@ export async function burnNFT(agent: AgentRuntime, mint: AccountAddress): Promis
 	//    }
 
 	//    return signedTransaction.hash;
-	//  } catch (error: any) {
+	//  } catch (error: unknow) {
 	//    throw new Error(`NFT burn failed: ${error.message}`);
 	//  }
 }

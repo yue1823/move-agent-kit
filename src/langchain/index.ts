@@ -46,6 +46,7 @@ import {
 	ThalaStakeTokenTool,
 	ThalaUnstakeTokenTool,
 } from "./thala"
+import { TweetNFTTool } from "./twotag/post_and_mint"
 
 export const createAptosTools = (agent: AgentRuntime, config: { filter?: ToolsNameList[] } = {}) => {
 	const tools = [
@@ -102,6 +103,8 @@ export const createAptosTools = (agent: AgentRuntime, config: { filter?: ToolsNa
 		new EchelonWithdrawTokenTool(agent),
 		new EchelonRepayTokenTool(agent),
 		new EchelonBorrowTokenTool(agent),
+		// Twotag tools
+		new TweetNFTTool(agent),
 	]
 
 	return config.filter ? tools.filter((tool) => config?.filter?.includes(tool.name as ToolsNameList)) : tools
@@ -118,3 +121,4 @@ export * from "./liquidswap"
 export * from "./panora"
 export * from "./openai"
 export * from "./thala"
+export * from "./twotag"

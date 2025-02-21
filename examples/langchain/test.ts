@@ -68,7 +68,7 @@ const promptOptions = [
 
 export const main = async () => {
 	const aptosConfig = new AptosConfig({
-		network: Network.MAINNET,
+		network: Network.TESTNET,
 	})
 	const aptos = new Aptos(aptosConfig)
 	const account = await aptos.deriveAccountFromPrivateKey({
@@ -77,7 +77,7 @@ export const main = async () => {
 		),
 	})
 
-	const signer = new LocalSigner(account, Network.MAINNET)
+	const signer = new LocalSigner(account, Network.TESTNET)
 	const agentRuntime = new AgentRuntime(signer, aptos, {
 		PANORA_API_KEY: process.env.PANORA_API_KEY,
 	})

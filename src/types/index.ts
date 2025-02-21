@@ -41,6 +41,7 @@ export type ToolsNameList =
 	| "echelon_withdraw_token"
 	| "echelon_borrow_token"
 	| "echelon_repay_token"
+	| "two_tag_tweet_nft"
 
 export type SignedTransactionResponse = {
 	senderAuthenticator?: AccountAuthenticator

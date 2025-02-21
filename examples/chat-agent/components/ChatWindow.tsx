@@ -29,6 +29,7 @@ export function ChatWindow(props: {
 		<div>
 			<input
 				type="checkbox"
+				className={"text-gray-500"}
 				id="show_intermediate_steps"
 				name="show_intermediate_steps"
 				checked={showIntermediateSteps}
