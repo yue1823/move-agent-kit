@@ -36,7 +36,7 @@ export async function transferNFT(
 	//    }
 
 	//    return signedTransaction.hash;
-	//  } catch (error: any) {
+	//  } catch (error: unknow) {
 	//    throw new Error(`NFT transfer failed: ${error.message}`);
 	//  }
 }

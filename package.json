@@ -66,6 +66,8 @@
 		"inquirer": "^12.3.2",
 		"langchain": "^0.3.11",
 		"openai": "^4.79.1",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
 		"zod": "^3.24.1"
 	},
 	"optionalDependencies": {

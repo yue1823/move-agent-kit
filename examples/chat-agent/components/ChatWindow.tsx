@@ -5,10 +5,11 @@ import "react-toastify/dist/ReactToastify.css"
 
 import { Message } from "ai"
 import { useChat } from "ai/react"
-import { ReactElement, useRef, useState } from "react"
+import { ReactElement, useEffect, useRef, useState } from "react"
 import type { FormEvent } from "react"
 
 import { ChatMessageBubble } from "@/components/ChatMessageBubble"
+import { useWallet } from "@aptos-labs/wallet-adapter-react"
 import { IntermediateStep } from "./IntermediateStep"
 
 export function ChatWindow(props: {
@@ -40,7 +41,7 @@ export function ChatWindow(props: {
 	)
 
 	const [sourcesForMessages, setSourcesForMessages] = useState<Record<string, any>>({})
-
+	const { account } = useWallet()
 	const {
 		messages,
 		input,
@@ -51,6 +52,9 @@ export function ChatWindow(props: {
 		setMessages,
 	} = useChat({
 		api: endpoint,
+		body: {
+			account: account != null ? account.address : "",
+		},
 		onResponse(response) {
 			const sourcesHeader = response.headers.get("x-sources")
 			const sources = sourcesHeader ? JSON.parse(Buffer.from(sourcesHeader, "base64").toString("utf8")) : []
@@ -70,8 +74,18 @@ export function ChatWindow(props: {
 		},
 	})
 
+	// const account=useUserStore(state => state.account);
+
+	useEffect(() => {
+		//console.dir(account,{depth:null})
+	}, [account])
+
 	async function sendMessage(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault()
+		if (!account) return
+		//console.dir(account,{depth:null})
+		//const userInputWithAddress = `${input}\n用户地址: ${account.address || "未连接钱包"}`;
+		const in_address = account.address
 		if (messageContainerRef.current) {
 			messageContainerRef.current.classList.add("grow")
 		}
@@ -81,6 +95,7 @@ export function ChatWindow(props: {
 		if (chatEndpointIsLoading ?? intermediateStepsLoading) {
 			return
 		}
+		console.log("show inter :", !showIntermediateSteps)
 		if (!showIntermediateSteps) {
 			handleSubmit(e)
 			// Some extra work to show intermediate steps properly
@@ -93,14 +108,21 @@ export function ChatWindow(props: {
 				role: "user",
 			})
 			setMessages(messagesWithUserReply)
+
+			console.log(in_address)
 			const response = await fetch(endpoint, {
 				method: "POST",
+
 				body: JSON.stringify({
 					messages: messagesWithUserReply,
 					show_intermediate_steps: true,
+					account: `${in_address}`,
 				}),
 			})
+
+			//console.log(response,)
 			const json = await response.json()
+			//console.log(json)
 			setIntermediateStepsLoading(false)
 			if (response.status === 200) {
 				const responseMessages: Message[] = json.messages
@@ -139,6 +161,7 @@ export function ChatWindow(props: {
 						role: "assistant",
 					},
 				])
+				//handleSubmit(e)
 			} else {
 				if (json.error) {
 					toast(json.error, {
@@ -159,7 +182,7 @@ export function ChatWindow(props: {
 			</h2>
 			{messages.length === 0 ? emptyStateComponent : ""}
 			<div
-				className="flex flex-col-reverse w-full mb-4 overflow-auto transition-[flex-grow] ease-in-out"
+				className="flex flex-col-reverse w-full mb-4 overflow-auto transition-[flex-grow] ease-in-out text-gray-600"
 				ref={messageContainerRef}
 			>
 				{messages.length > 0
@@ -183,7 +206,7 @@ export function ChatWindow(props: {
 				<div className="flex">{intemediateStepsToggle}</div>
 				<div className="flex w-full mt-4">
 					<input
-						className="grow mr-8 p-4 rounded"
+						className="grow mr-8 p-4 rounded text-gray-500"
 						value={input}
 						placeholder={placeholder ?? "What's it like to be a pirate?"}
 						onChange={handleInputChange}

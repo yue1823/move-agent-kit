@@ -47,6 +47,7 @@ import {
 	ThalaUnstakeTokenTool,
 } from "./thala"
 import { TweetNFTTool } from "./twotag/post_and_mint"
+import { Read_public_tweet } from "./twotag/read_public_tweet"
 
 export const createAptosTools = (agent: AgentRuntime, config: { filter?: ToolsNameList[] } = {}) => {
 	const tools = [
@@ -105,6 +106,7 @@ export const createAptosTools = (agent: AgentRuntime, config: { filter?: ToolsNa
 		new EchelonBorrowTokenTool(agent),
 		// Twotag tools
 		new TweetNFTTool(agent),
+		new Read_public_tweet(agent),
 	]
 
 	return config.filter ? tools.filter((tool) => config?.filter?.includes(tool.name as ToolsNameList)) : tools

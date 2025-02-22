@@ -10,6 +10,6 @@ export class AptosAccountAddressTool extends Tool {
 	}
 
 	async _call(_input: string): Promise<string> {
-		return this.agent.account.getAddress().toString()
+		return this.agent.to_address
 	}
 }

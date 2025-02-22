@@ -50,6 +50,7 @@ import {
 } from "./tools/echelon"
 import { stakeTokenWithEcho, unstakeTokenWithEcho } from "./tools/echo"
 import { createImage } from "./tools/openai"
+import { read_public_tweet } from "./tools/twotag/read_public_tweet"
 import { getTokenByTokenName } from "./utils/get-pool-address-by-token-name"
 
 const aptosConfig = new AptosConfig({
@@ -60,11 +61,13 @@ export class AgentRuntime {
 	public account: BaseSigner
 	public aptos: Aptos
 	public config: any
+	public to_address: string
 
-	constructor(account: BaseSigner, aptos: Aptos, config?: any) {
+	constructor(account: BaseSigner, aptos: Aptos, config?: any, to_address?: string) {
 		this.account = account
 		this.aptos = new Aptos(aptosConfig)
 		this.config = config ? config : {}
+		this.to_address = to_address ? to_address : "0xd05905613a1c012ef232910d7de4684a4ca7eb6fc41b81d76b1c6919ec888776"
 	}
 
 	async getPythData() {
@@ -257,7 +260,11 @@ export class AgentRuntime {
 	}
 
 	// 2tag
-	two_tag_tweet(tag: string, text: string, to_address: string, nft_url: string) {
-		return two_tag_tweet(this, tag, text, to_address, nft_url)
+	two_tag_tweet() {
+		return two_tag_tweet(this, this.to_address)
+	}
+
+	read_public_tweet(nft_token_id: string) {
+		return read_public_tweet(this, nft_token_id)
 	}
 }

@@ -25,7 +25,7 @@
 			"recommended": true,
 			"suspicious": {
 				"recommended": true,
-				"noExplicitAny": "warn"
+				"noExplicitAny": "off"
 			},
 			"style": {
 				"recommended": true
@@ -47,7 +47,7 @@
 			},
 			"nursery": {
 				"recommended": true,
-				"useConsistentMemberAccessibility": "warn"
+				"useConsistentMemberAccessibility": "off"
 			}
 		}
 	},
