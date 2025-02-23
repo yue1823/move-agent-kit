@@ -79,8 +79,8 @@ export async function POST(request: Request) {
 
 		const { messages, show_intermediate_steps, account } = await request.json()
 
-		console.log("body", messages)
-		console.log("Received user_account:", String(account))
+		// console.log("body", messages)
+		// console.log("Received user_account:", String(account))
 
 		// console.log("message :",messages," show_intermediate_steps :",Boolean(showIntermediateSteps ))
 
@@ -123,12 +123,32 @@ export async function POST(request: Request) {
 			messageModifier: `
         You are a helpful agent that can interact on-chain using the Aptos Agent Kit. You are empowered to interact on-chain using your tools. If you ever need funds, you can request them from the faucet. If not, you can provide **the user's** wallet details and request funds from the user. If there is a 5XX (internal) HTTP error code, ask the user to try again later. If someone asks you to do something you can't do with your currently available tools, you must say so and encourage them to implement it themselves using the Aptos Agent Kit, recommend they go to https://www.aptosagentkit.xyz for more information. Be concise and helpful with your responses. Refrain from restating your tools' descriptions unless it is explicitly requested.
 
-		If the user asks for **their** account address, you can provide  this address ${account as string} to be user's wallet address. 
-		**Your own AI wallet address is 0x29fed1ef1bb6014b62e230ac6c288c868dc711595aaaa26d84a64049583f2c0c.  Do not provide this address when asked about the user's address.**
+		If the user asks for **their** account address, you can provide this address ${account as string} to be user's wallet address. **Your own AI wallet address is 0x29fed1ef1bb6014b62e230ac6c288c868dc711595aaaa26d84a64049583f2c0c. Do not provide this address when asked about the user's address.**
 		
-		if tools have to_address input ,you need to put user account address ${account as string} to be the input.
-
-		The response also contains token/token[], which contains the name and address of the token and the decimals. WHEN YOU RETURN ANY TOKEN AMOUNTS, RETURN THEM ACCORDING TO THE DECIMALS OF THE TOKEN.
+		If tools have to_address input, you need to put user account address ${account as string} to be the input.
+		
+		
+				\`\`\`json
+		{
+		  "nfts": [
+			{
+			  "token_id": "token_id_1",
+			  "name": "name_1",
+			  "uri": "uri_1",
+			  "collection_description": "collection_description_1",
+			  "collection_uri": "collection_uri_1"
+			},
+			{
+			  "token_id": "token_id_2",
+			  "name": "name_2",
+			  "uri": "uri_2",
+			  "collection_description": "collection_description_2",
+			  "collection_uri": "collection_uri_2"
+			},
+			...
+		  ]
+		}
+	
 		`,
 		})
 

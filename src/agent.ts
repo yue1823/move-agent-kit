@@ -50,6 +50,7 @@ import {
 } from "./tools/echelon"
 import { stakeTokenWithEcho, unstakeTokenWithEcho } from "./tools/echo"
 import { createImage } from "./tools/openai"
+import { get_twotag_nft } from "./tools/twotag/get_twotag_nft"
 import { read_public_tweet } from "./tools/twotag/read_public_tweet"
 import { getTokenByTokenName } from "./utils/get-pool-address-by-token-name"
 
@@ -266,5 +267,9 @@ export class AgentRuntime {
 
 	read_public_tweet(nft_token_id: string) {
 		return read_public_tweet(this, nft_token_id)
+	}
+
+	get_twotag_nft() {
+		return get_twotag_nft(this, this.to_address)
 	}
 }
